@@ -1,0 +1,23 @@
+doctype
+html
+  head
+    title Hashtag Battle
+  body
+    .text-center
+      h1 Hashtag Battle
+
+    br
+
+    form.battle-form
+      .row
+        .col-sm-5.col-xs-6
+          include ./includes/tag-counter
+
+        .col-sm-2.hidden-xs
+          include ./includes/submit-button
+
+        .col-sm-5.col-xs-6
+          include ./includes/tag-counter
+
+      .visible-xs
+        include ./includes/submit-button
