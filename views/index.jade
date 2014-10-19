@@ -11,16 +11,30 @@ html
 
     br
 
+    mixin tag-counter(value)
+      .tag-counter
+        input.input.form-control.input-lg(type='text' value=value)
+        .results
+
+    mixin submit-button
+      button.btn.btn-danger.btn-lg.btn-block.submit-button
+        span.start-text Start
+        span.stop-text Stop
+        span.hidden-sm &nbsp;Battle
+        span !
+
     form.battle-form
+      .error.hide.alert.alert-danger.text-center
+
       .row
         .col-sm-5.col-xs-6
-          include ./includes/tag-counter
+          +tag-counter(params.one)
 
         .col-sm-2.hidden-xs
-          include ./includes/submit-button
+          +submit-button
 
         .col-sm-5.col-xs-6
-          include ./includes/tag-counter
+          +tag-counter(params.two)
 
       .visible-xs
-        include ./includes/submit-button
+          +submit-button

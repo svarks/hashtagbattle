@@ -1,42 +1,29 @@
 class TweetFinder
-  url: '/api/tweets'
+  url: '/tweets'
   source: null
 
-  constructor: (el) ->
-    @$el = $(el)
+  constructor: (@keywords) ->
+    @callbacks = {}
+
+  on: (event, cb) ->
+    @callbacks[event] = cb
 
   start: ->
-    @counter = 0
-    @_updateCounter()
-
-    @source = new EventSource("#{@url}?keywords=#{@_getKeyword()}")
+    @source = new EventSource(@url + '?' + $.param(keywords: @keywords))
     @source.addEventListener('message', @_onMessage)
     @source.addEventListener('remote-error', @_onError)
 
   stop: ->
     @source.close() if @source
-    @_hideError()
-
-  _getKeyword: ->
-    @$el.find('.input').val()
 
   _onMessage: (e) =>
-    @counter++
-    @_updateCounter()
-    @_hideError()
+    @_runCallback('message', JSON.parse(e.data))
 
   _onError: (e) =>
-    @_showError(e.data)
+    @_runCallback('error', JSON.parse(e.data))
 
-  _hideError: ->
-    @$el.find('.error').addClass('hide')
-
-  _showError: (message) ->
-    @$el.find('.error')
-      .removeClass('hide')
-      .html(message)
-
-  _updateCounter: ->
-    @$el.find('.results').html(@counter)
+  _runCallback: (event, data) ->
+    cb = @callbacks[event]
+    cb(data) if cb
 
 module.exports = TweetFinder

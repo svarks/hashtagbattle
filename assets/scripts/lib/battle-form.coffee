@@ -1,12 +1,9 @@
-TweetFinder = require './tweet-finder'
+TweetFinder  = require './tweet-finder'
+TweetCounter = require './tweet-counter'
 
 class BattleForm
   constructor: (el) ->
     @$el = $(el)
-
-    @finders = @$el.find('.tag-counter').map (i, el) ->
-      new TweetFinder(el)
-
     @$el.on('submit', @_onSubmit)
 
   _onSubmit: (e) =>
@@ -18,32 +15,57 @@ class BattleForm
       @_start()
 
   _start: ->
-    # both fields are required
-    if $.grep(@_getKeywords(), (s) -> s == '').length > 0
+    counters = @_buildCounters()
+    keywords = $.map counters, (counter) -> counter.keyword
+
+    if $.grep(keywords, (s) -> s == '').length > 0
+      @_showError('Please enter both tags first.')
       return false
 
-    finder.start() for finder in @finders
+    @finder = new TweetFinder(keywords)
+
+    @finder.on 'message', (data) =>
+      @_hideError()
+
+      for counter in counters
+        unless $.inArray(counter.keyword, data.keywords) == -1
+          counter.increment()
+
+    @finder.on 'error', (message) =>
+      @_showError(message)
+
+    @finder.start()
     @started = true
     @_updateButton()
-    @_updateURL()
+    @_updateURL(keywords)
 
   _stop: ->
-    finder.stop() for finder in @finders
+    @finder.stop()
     @started = false
     @_updateButton()
 
+  _buildCounters: ->
+    @$el.find('.tag-counter').map (i, el) ->
+      counter = new TweetCounter($(el).find('.results'))
+      counter.keyword = $(el).find('.input').val()
+      counter
+
+  _showError: (message) ->
+    @$el.find('.error')
+      .html(message)
+      .removeClass('hide')
+
+  _hideError: ->
+    @$el.find('.error')
+      .addClass('hide')
+
   _updateButton: ->
-    @$el.find(':submit').toggleClass('started', @started)
+    @$el.find(':submit')
+      .toggleClass('started', @started)
 
-  _updateURL: ->
+  _updateURL: (keywords) ->
     return false unless window.history.replaceState
-
-    keywords = @_getKeywords()
     params = { one: keywords[0], two: keywords[1] }
-
     window.history.replaceState({}, null, '?' + $.param(params))
-
-  _getKeywords: ->
-    @$el.find('.input').map (i, el) -> $(el).val()
 
 module.exports = BattleForm

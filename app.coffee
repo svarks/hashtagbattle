@@ -8,7 +8,7 @@ app.set 'views', __dirname + '/views'
 app.set 'view engine', 'jade'
 
 app.get '/', require('./routes/home')
-app.get '/api/tweets', require('./routes/api-tweets')
+app.get '/tweets', require('./routes/tweets')
 
 app.use express.static(__dirname + '/public')
 

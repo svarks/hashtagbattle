@@ -8,9 +8,24 @@ twitter = new Twitter(
 )
 
 class TweetFetcher
-  fetch: (keywords, onSuccess, onError) ->
-    twitter.stream 'statuses/filter', { track: keywords }, (stream) ->
-      stream.on 'data', onSuccess
+  start: (keywords, onSuccess, onError) ->
+
+    parseTweet = (tweet) ->
+      matchingKeywords = []
+
+      for keyword in keywords
+        # TODO: improve the search algorithm
+        if tweet.text.match(new RegExp(keyword, 'i'))
+          matchingKeywords.push(keyword)
+
+      { text: tweet.text, keywords: matchingKeywords }
+
+    twitter.stream 'statuses/filter', { track: keywords.join(',') }, (stream) =>
+      stream.on 'data',  (tweet) -> onSuccess(parseTweet(tweet))
       stream.on 'error', (error) -> onError(error.source)
+      @stream = stream
+
+  stop: ->
+    @stream.destroy()
 
 module.exports = TweetFetcher
