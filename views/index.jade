@@ -1,40 +1,35 @@
-doctype
-html
-  head
-    title Hashtag Battle
-    link(type='text/css' rel='stylesheet' media='all', href='/app.css')
-    script(src='/vendor.js')
-    script(src='/app.js')
-  body
-    .text-center
-      h1 Hashtag Battle
+extends ./layout
 
-    br
+mixin tag-counter(value)
+  .tag-counter
+    input.input.form-control.input-lg(type='text' value=value)
+    .results
 
-    mixin tag-counter(value)
-      .tag-counter
-        input.input.form-control.input-lg(type='text' value=value)
-        .results
+mixin submit-button
+  button.btn.btn-danger.btn-lg.btn-block.submit-button
+    span.start-text Start
+    span.stop-text Stop
+    span.hidden-sm &nbsp;Battle
+    span !
 
-    mixin submit-button
-      button.btn.btn-danger.btn-lg.btn-block.submit-button
-        span.start-text Start
-        span.stop-text Stop
-        span.hidden-sm &nbsp;Battle
-        span !
+block content
+  .text-center
+    h1 Hashtag Battle
 
-    form.battle-form
-      .error.hide.alert.alert-danger.text-center
+  br
 
-      .row
-        .col-sm-5.col-xs-6
-          +tag-counter(params.one)
+  form.battle-form
+    .error.hide.alert.alert-danger.text-center
 
-        .col-sm-2.hidden-xs
-          +submit-button
+    .row
+      .col-sm-5.col-xs-6
+        +tag-counter(params.one)
 
-        .col-sm-5.col-xs-6
-          +tag-counter(params.two)
+      .col-sm-2.hidden-xs
+        +submit-button
 
-      .visible-xs
-          +submit-button
+      .col-sm-5.col-xs-6
+        +tag-counter(params.two)
+
+    .visible-xs
+        +submit-button
