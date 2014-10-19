@@ -32,6 +32,8 @@ class BattleForm
           counter.increment()
 
     @finder.on 'error', (message) =>
+      if message = 'Exceeded connection limit for user'
+        message = 'Too many connections, waiting...'
       @_showError(message)
 
     @finder.start()

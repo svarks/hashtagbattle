@@ -23,9 +23,10 @@ class TweetFetcher
     twitter.stream 'statuses/filter', { track: keywords.join(',') }, (stream) =>
       stream.on 'data',  (tweet) -> onSuccess(parseTweet(tweet))
       stream.on 'error', (error) -> onError(error.source)
+
       @stream = stream
 
-  stop: ->
-    @stream.destroy()
+  stop: =>
+    @stream.destroy() if @stream
 
 module.exports = TweetFetcher

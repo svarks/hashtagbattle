@@ -10,6 +10,8 @@ many concurrent connections.
 And I've also been having some issues with twitter api gem for ruby
 (it wouldn't let me close stream connection when client terminate connection)
 
+TODO: add some tests
+
 ## Restrictions
 
 Twitter can only support 2 connections at the same time.

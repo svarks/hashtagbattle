@@ -1,8 +1,6 @@
 util         = require 'util'
 TweetFetcher = require '../tweet-fetcher'
 
-fetcher = new TweetFetcher
-
 sendSSE = (res, options) ->
   options.data = JSON.stringify(options.data)
 
@@ -25,8 +23,11 @@ module.exports = (req, res) ->
     sendSSE(res, data: data)
 
   onError = (message) ->
-    sendSSE(res, event: 'remote-error', data: message)
+    sendSSE(res, event: 'remote-error', data: message, retry: 10000)
+    fetcher.stop()
+    res.end()
 
+  fetcher = new TweetFetcher
   fetcher.start(keywords, onSuccess, onError)
 
   # making sure we close connection when client disconnect
